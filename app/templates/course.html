@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz App -{{course_name}} Course{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{course_name}} Course</h1>
+    <ul class="list-group">
+        {% for teacher_name in teacher_names %}
+        <li class="list-group-item"><a href="{{ url_for('main.quiz', cname=course_name, tname=teacher_name) }}">{{course_name}} quiz by {{teacher_name}}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

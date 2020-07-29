@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Quiz App -{% if form.body.data %} Edit {% else %} New {% endif %} Question {% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h3>{% if form.body.data %}Edit{% else %} New {% endif %} Question</h3>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}

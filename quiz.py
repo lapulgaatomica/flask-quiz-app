@@ -2,7 +2,8 @@ import os
 import click
 from flask_migrate import Migrate
 from app import create_app, db
-from app.models import User
+from app.models import User, Course
+from flask import g
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 migrate = Migrate(app, db)
@@ -10,6 +11,11 @@ migrate = Migrate(app, db)
 @app.shell_context_processor
 def make_shell_context():
     return dict(db=db, User=User)
+
+@app.context_processor
+def get_courses():
+    g.courses = Course.query.all()
+    return dict(courses=g.courses)
 
 @app.cli.command()
 @click.argument('test_names', nargs=-1)
