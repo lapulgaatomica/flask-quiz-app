@@ -95,12 +95,11 @@ def quiz():
     quizes = [quiz for quiz in every_quiz if (quiz.user.username == tname) and (quiz.course.course_name == cname)]
     if request.method == 'POST':
         score = 0
-        answers = [{int(form[0]): request.form[form[0]]} for form in request.form]
-        correct_answers = [{quiz.id: quiz.correct} for quiz in quizes]
-        for index, answers in enumerate(answers):
-            for k, v in answers.items():
-                if v == correct_answers[index][k]:
+        answered_questions = list(request.form)
+        if answered_questions:
+            for answered_question in answered_questions:
+                if Question.query.get_or_404(answered_question).correct == request.form.get(answered_question):
                     score += 1
-        flash(f'Your score in the quiz was {score}')
+        flash(f'Your score was {score}')
         return redirect(url_for('main.quiz', cname=cname, tname=tname))
     return render_template('quiz.html', quizes=quizes, cname=cname, tname=tname)
