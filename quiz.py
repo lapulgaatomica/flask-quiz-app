@@ -14,7 +14,7 @@ def make_shell_context():
 
 @app.context_processor
 def get_courses():
-    g.courses = Course.query.all()
+    g.courses = Course.query.order_by('course_name').all()
     return dict(courses=g.courses)
 
 @app.cli.command()

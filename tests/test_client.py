@@ -36,10 +36,10 @@ class FlaskClientTestCase(unittest.TestCase):
             'password' : 'ran'
         }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(re.search('ran', response.get_data(as_text=True)))
         self.assertTrue(
             'You have just been logged in.' in response.get_data(
                 as_text=True))
+        self.assertTrue(re.search('Hi\s+ran!', response.get_data(as_text=True)))
         
         # log out
         response = self.client.get('/auth/logout', follow_redirects=True)
