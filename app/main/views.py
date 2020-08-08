@@ -23,7 +23,7 @@ def courses():
             course = Course(course_name=form.course_name.data.lower())
             db.session.add(course)
             db.session.commit()
-            flash(f'A Course named {form.course_name.data} has been created')
+            flash(f'A Course named {form.course_name.data} has been created by you')
             return redirect(url_for('main.courses'))
         return render_template('courses.html', form=form, courses=courses)
     return render_template('courses.html', courses=courses)
@@ -44,10 +44,11 @@ def create_question():
          user=current_user._get_current_object())
         db.session.add(question)
         db.session.commit()
+        flash(f'A question has been created by you')
         return redirect(url_for('main.create_question'))
     return render_template('create_or_edit_question.html', form=form)
 
-@main.route('/my-questions', methods=['GET', 'POST'])
+@main.route('/my-questions', methods=['GET'])
 @login_required
 @requires_teacher
 def my_questions():
@@ -75,6 +76,7 @@ def edit_question(id):
         question.course_id = form.course_id.data
         db.session.add(question)
         db.session.commit()
+        flash('Question edited')
         return redirect(url_for('main.my_questions'))
     form.body.data = question.body
     form.a.data = question.a
@@ -97,9 +99,10 @@ def delete_question(id):
     if question:
         db.session.delete(question)
         db.session.commit()
+        flash('Question deleted')
         return redirect(url_for('main.my_questions'))
 
-@main.route('/course/<int:id>', methods=['GET', 'POST'])
+@main.route('/course/<int:id>', methods=['GET'])
 def course(id):
     quizes = Question.query.filter_by(course_id=id)
     if quizes.first() is None:
@@ -108,7 +111,7 @@ def course(id):
     course_name = quizes.first().course.course_name
     teacher_names = {quiz.user.username for quiz in quizes}
     return render_template('course.html', teacher_names=teacher_names, 
-    course_name=course_name, id=id)
+    course_name=course_name)
 
 @main.route('/quiz', methods=['GET', 'POST'])
 def quiz():

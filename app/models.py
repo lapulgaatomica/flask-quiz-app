@@ -30,6 +30,9 @@ class User(UserMixin, db.Model):
 
     def owns_question(self, id):
         return self.id == Question.query.get_or_404(id).user.id
+    
+    def make_teacher(self):
+        self.is_teacher = True
 
 class AnonymousUser(AnonymousUserMixin):
     is_teacher = False

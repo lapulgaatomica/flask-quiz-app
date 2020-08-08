@@ -8,7 +8,7 @@
     <h1>Courses</h1>
     <ul class="list-group">
         {% for course in courses %}
-        <li class="list-group-item">{{ course.course_name }}</li>
+        <li class="list-group-item"><a href="{{ url_for('main.course', id=course.id) }}">{{ course.course_name }}</a></li>
         {% endfor %}
     </ul>
 </div>
