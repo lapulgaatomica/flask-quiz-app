@@ -37,9 +37,22 @@ class FlaskClientTestCase(unittest.TestCase):
     def logout(self):
         return self.client.get('/auth/logout', follow_redirects=True)
 
-    def insert_course(self, course_name):
+    def insert_course(self, course_name='default'):
         return self.client.post('/courses', data={
             'course_name' : course_name
+        }, follow_redirects=True)
+    
+    def insert_question(self):
+        return self.client.post('/create-question', data={
+            'body':'a',
+            'a':'a',
+            'b':'b',
+            'c':'c',
+            'd':'d',
+            'e':'e',
+            'correct':'a',
+            'course_id':1,
+            'user_id':1
         }, follow_redirects=True)
 
     def test_register_and_login(self):
@@ -82,3 +95,43 @@ class FlaskClientTestCase(unittest.TestCase):
         insert_course_response = self.insert_course('Biology')
         self.assertTrue('A Course named Biology already exists' \
          in insert_course_response.get_data(as_text=True))
+
+    def test_create_question(self):
+        response = self.client.get('/create-question')
+        self.assertFalse('form' in response.get_data(as_text=True))
+
+        self.register('student', 'student')
+        self.login('student', 'student')
+        response = self.client.get('/create-question')
+        self.assertFalse('form' in response.get_data(as_text=True))
+
+        self.register('teacher', 'teacher')
+        User.query.filter_by(username='teacher').first().make_teacher()
+        self.login('teacher', 'teacher')
+        response = self.client.get('/create-question')
+        self.assertTrue('form' in response.get_data(as_text=True))
+        self.insert_course()
+        response = self.insert_question()
+        self.assertTrue('A question has been created by you' \
+         in response.get_data(as_text=True))
+
+    def test_my_questions(self):
+        response = self.client.get('/my-questions')
+        self.assertFalse('My questions' in response.get_data(as_text=True))
+
+        self.register('student', 'student')
+        self.login('student', 'student')
+        response = self.client.get('/my-questions')
+        self.assertFalse('My questions' in response.get_data(as_text=True))
+
+        self.register('teacher', 'teacher')
+        User.query.filter_by(username='teacher').first().make_teacher()
+        self.login('teacher', 'teacher')
+        response = self.client.get('/my-questions')
+        self.assertTrue('My questions' in response.get_data(as_text=True))
+        
+        self.insert_course()
+        self.insert_question()
+        response = self.client.get('/my-questions')
+        self.assertTrue('Edit' in response.get_data(as_text=True))
+        self.assertTrue('Delete' in response.get_data(as_text=True))
