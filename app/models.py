@@ -3,13 +3,36 @@ from flask import current_app, request
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 
+class Question(db.Model):
+    __tablename__ = 'questions'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    a = db.Column(db.String(128), nullable=False)
+    b = db.Column(db.String(128), nullable=False)
+    c = db.Column(db.String(128))
+    d = db.Column(db.String(128))
+    e = db.Column(db.String(128))
+    correct = db.Column(db.String(1), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+class Result(db.Model):
+    __tablename__ = 'results'
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    highest_score = db.Column(db.Integer, default=0)
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     is_teacher = db.Column(db.Boolean, default=False)
-    courses = db.relationship('Question', backref='user', lazy='dynamic')
+    courses = db.relationship('Question', backref='user', foreign_keys=[Question.user_id], lazy='dynamic', cascade="all, delete-orphan")
+    results = db.relationship('Result', backref='user', foreign_keys=[Result.user_id], lazy='dynamic', cascade="all, delete-orphan")
+
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -47,17 +70,6 @@ class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(64), unique=True)
-    questions = db.relationship('Question', backref='course', lazy='dynamic')
+    questions = db.relationship('Question', backref='course', lazy='dynamic', cascade="all, delete-orphan")
+    results = db.relationship('Result', backref='course', lazy='dynamic', cascade="all, delete-orphan")
 
-class Question(db.Model):
-    __tablename__ = 'questions'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
-    a = db.Column(db.String(128), nullable=False)
-    b = db.Column(db.String(128), nullable=False)
-    c = db.Column(db.String(128))
-    d = db.Column(db.String(128))
-    e = db.Column(db.String(128))
-    correct = db.Column(db.String(1), nullable=False)
-    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

@@ -20,6 +20,7 @@
                 <a class="navbar-brand" href="{{ url_for('main.my_questions') }}">My Questions</a>
                 {% endif %}
             <a class="navbar-brand" href="{{ url_for('auth.logout') }}">Logout</a>
+            <a class="navbar-brand" href="{{ url_for('main.my_results') }}">My Results</a>
             {% else %}
             <a class="navbar-brand" href="{{ url_for('auth.register') }}">Register</a>
             <a class="navbar-brand" href="{{ url_for('auth.login') }}">Login</a>

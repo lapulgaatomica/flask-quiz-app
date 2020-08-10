@@ -3,8 +3,9 @@ from flask import render_template, redirect, url_for, session, request, flash
 from .forms import QuestionForm, CoursesForm
 from flask_login import login_user, logout_user, login_required, current_user
 from ..decorators import requires_teacher
-from ..models import Course, Question
+from ..models import Course, Question, Result, User
 from .. import db
+from sqlalchemy.sql.expression import func
 
 @main.route('/', methods=['GET'])
 def index():
@@ -27,6 +28,17 @@ def courses():
             return redirect(url_for('main.courses'))
         return render_template('courses.html', form=form, courses=courses)
     return render_template('courses.html', courses=courses)
+
+@main.route('/delete-course/<int:id>', methods=['GET'])
+@login_required
+@requires_teacher
+def delete_course(id):
+    course = Course.query.get_or_404(id)
+    if course:
+        db.session.delete(course)
+        db.session.commit()
+        flash('Course deleted')
+        return redirect(url_for('main.courses'))
 
 @main.route('/create-question', methods=['GET', 'POST'])
 @login_required
@@ -108,18 +120,17 @@ def course(id):
     if quizes.first() is None:
         flash('There are no questions for this course yet')
         return redirect(url_for('main.index'))
-    course_name = quizes.first().course.course_name
-    teacher_names = {quiz.user.username for quiz in quizes}
-    return render_template('course.html', teacher_names=teacher_names, 
-    course_name=course_name)
+    course = quizes.first().course
+    teachers = {quiz.user for quiz in quizes}
+    return render_template('course.html', teachers=teachers, course=course)
 
 @main.route('/quiz', methods=['GET', 'POST'])
 def quiz():
-    cname = request.args.get('cname')
-    tname = request.args.get('tname')
-    every_quiz = Question.query.all()
-    quizes = [quiz for quiz in every_quiz if 
-                (quiz.user.username == tname) and (quiz.course.course_name == cname)]
+    course = request.args.get('course')
+    teacher = request.args.get('teacher')
+    quizes = Question.query.filter_by(course_id=course).filter_by(user_id=teacher).order_by(func.random())
+    tname = quizes.first().user.username
+    cname = quizes.first().course.course_name
     if request.method == 'POST':
         score = 0
         answered_questions = list(request.form)
@@ -128,6 +139,31 @@ def quiz():
                 if Question.query.get_or_404(answered_question).correct == \
                 request.form.get(answered_question):
                     score += 1
-        flash(f'Your score was {score}')
-        return redirect(url_for('main.quiz', cname=cname, tname=tname))
+        
+        if current_user.is_authenticated:
+            result = Result.query.filter_by(user_id=current_user.id).filter_by(course_id=course).filter_by(teacher_id=teacher).first()
+            if result is None:
+                result = Result(
+                course_id=course,
+                user=current_user,
+                teacher_id=teacher,
+                highest_score=score)
+                flash(f'Your highest score in this quiz is {score} which is also your score in the test')
+            else:
+                if score > result.highest_score:
+                    result.highest_score = score
+                    flash(f'Your highest score in this quiz is {score} which is also your score in the test')
+                else:
+                    flash(f'Your score in this quiz is {score} ')
+            db.session.add(result)
+            db.session.commit()
+        else:
+            flash(f'Your score in this quiz is {score} ')
+        return redirect(url_for('main.quiz', course=course, teacher=teacher))
     return render_template('quiz.html', quizes=quizes, cname=cname, tname=tname)
+
+@main.route('/my-results', methods=['GET'])
+@login_required
+def my_results():
+    my_results = Result.query.filter_by(user=current_user._get_current_object())
+    return render_template('my_results.html', my_results=my_results)

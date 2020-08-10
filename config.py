@@ -6,6 +6,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     HEADTEACHER = os.environ.get('HEADTEACHER')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # SQLALCHEMY_ECHO = True
 
     @staticmethod
     def init_app(app):
