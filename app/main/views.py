@@ -165,5 +165,7 @@ def quiz():
 @main.route('/my-results', methods=['GET'])
 @login_required
 def my_results():
-    my_results = Result.query.filter_by(user=current_user._get_current_object())
+    my_results = Result.query.filter_by(user=current_user._get_current_object()).all()
+    for my_result in my_results:
+        my_result.teacher_name = User.query.get_or_404(my_result.teacher_id).username 
     return render_template('my_results.html', my_results=my_results)
