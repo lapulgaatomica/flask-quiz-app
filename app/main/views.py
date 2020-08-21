@@ -50,10 +50,17 @@ def create_question():
         if not session.get('selected_course') or \
         not form.course_id.data == session.get('selected_course'):
             session['selected_course'] = form.course_id.data
-        question = Question(body=form.body.data, a=form.a.data,
-         b=form.b.data, c=form.c.data,d=form.d.data, e=form.e.data, 
-         correct=form.correct.data, course_id=int(session.get('selected_course')),
-         user=current_user._get_current_object())
+        question = Question(
+            body=form.body.data, 
+            a=form.a.data,
+            b=form.b.data,
+            c=form.c.data,
+            d=form.d.data, 
+            e=form.e.data, 
+            correct=form.correct.data,
+            course_id=int(session.get('selected_course')),
+            user=current_user._get_current_object(),
+            is_structural=False if form.b.data else True)
         db.session.add(question)
         db.session.commit()
         flash(f'A question has been created by you')
@@ -86,6 +93,7 @@ def edit_question(id):
         question.e = form.e.data
         question.correct = form.correct.data
         question.course_id = form.course_id.data
+        question.is_structural = False if form.b.data else True
         db.session.add(question)
         db.session.commit()
         flash('Question edited')
@@ -136,9 +144,14 @@ def quiz():
         answered_questions = list(request.form)
         if answered_questions:
             for answered_question in answered_questions:
-                if Question.query.get_or_404(answered_question).correct == \
-                request.form.get(answered_question):
-                    score += 1
+                my_answer = request.form.get(answered_question)
+                query_result = Question.query.get_or_404(answered_question)
+                if len(my_answer) == 1:
+                    if (not query_result.is_structural) and (query_result.correct == my_answer):
+                        score += 1
+                else:
+                    if (query_result.is_structural) and (query_result.a == my_answer):
+                        score += 1
         
         if current_user.is_authenticated:
             result = Result.query.filter_by(user_id=current_user.id).filter_by(course_id=course).filter_by(teacher_id=teacher).first()

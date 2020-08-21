@@ -8,11 +8,12 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     a = db.Column(db.String(128), nullable=False)
-    b = db.Column(db.String(128), nullable=False)
+    b = db.Column(db.String(128))
     c = db.Column(db.String(128))
     d = db.Column(db.String(128))
     e = db.Column(db.String(128))
     correct = db.Column(db.String(1), nullable=False)
+    is_structural = db.Column(db.Boolean, default=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 

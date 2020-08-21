@@ -10,7 +10,9 @@
         {% for course in courses %}
         <li class="list-group-item">
             <a href="{{ url_for('main.course', id=course.id) }}">{{ course.course_name }}</a>
+            {% if current_user.is_teacher %}
             <a href="{{ url_for('main.delete_course', id=course.id) }}">delete</a>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>

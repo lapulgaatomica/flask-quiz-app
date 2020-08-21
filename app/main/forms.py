@@ -8,7 +8,7 @@ from flask import session
 class QuestionForm(FlaskForm):
     body = TextAreaField('Question', validators=[DataRequired(), Length(1, 256)])
     a = StringField('First Option', validators=[DataRequired(), Length(1, 128)])
-    b = StringField('Second Option', validators=[DataRequired(), Length(1, 128)])
+    b = StringField('Second Option')
     c = StringField('Third Option')
     d = StringField('Fourth Option')
     e = StringField('Fifth Option')
