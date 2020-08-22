@@ -146,12 +146,10 @@ def quiz():
             for answered_question in answered_questions:
                 my_answer = request.form.get(answered_question)
                 query_result = Question.query.get_or_404(answered_question)
-                if len(my_answer) == 1:
-                    if (not query_result.is_structural) and (query_result.correct == my_answer):
-                        score += 1
-                else:
-                    if (query_result.is_structural) and (query_result.a == my_answer):
-                        score += 1
+                if (not query_result.is_structural) and (query_result.correct == my_answer):
+                    score += 1
+                elif (query_result.is_structural) and (query_result.a.lower() == my_answer.lower()):
+                    score += 1
         
         if current_user.is_authenticated:
             result = Result.query.filter_by(user_id=current_user.id).filter_by(course_id=course).filter_by(teacher_id=teacher).first()
