@@ -1,4 +1,4 @@
 -r common.txt
 Flask-SSLify==0.1.5
 waitress==1.4.4
-psycopg2==2.7.3
+psycopg2
