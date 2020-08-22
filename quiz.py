@@ -1,6 +1,6 @@
 import os
 import click
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 from app import create_app, db
 from app.models import User, Course, Question, Result
 from flask import g
