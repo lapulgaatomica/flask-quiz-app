@@ -10,10 +10,21 @@ migrate = Migrate(app, db)
 
 @app.shell_context_processor
 def make_shell_context():
+    """
+    Ensures returned values are accessible in the interactive shell
+    without importing them.
+
+    :return: a dictionary of values to be imported
+    """
     return dict(db=db, User=User, Course=Course, Question=Question, Result=Result)
 
 @app.context_processor
 def get_courses():
+    """
+    Ensures all the courses in the database are available in all templates
+
+    :return: a dictionary of courses to be used by all templates
+    """
     g.courses = Course.query.order_by('course_name').all()
     return dict(courses=g.courses)
 
@@ -30,6 +41,8 @@ def test(test_names):
 
 @app.cli.command()
 def deploy():
-    """Run deployment tasks."""
+    """
+    Run deployment tasks.
+    """
     # migrate database to latest revision
     upgrade()

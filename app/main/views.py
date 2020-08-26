@@ -40,6 +40,16 @@ def delete_course(id):
         flash('Course deleted')
         return redirect(url_for('main.courses'))
 
+@main.route('/course/<int:id>', methods=['GET'])
+def course(id):
+    quizes = Question.query.filter_by(course_id=id)
+    if quizes.first() is None:
+        flash('There are no questions for this course yet')
+        return redirect(url_for('main.index'))
+    course = quizes.first().course
+    teachers = {quiz.user for quiz in quizes}
+    return render_template('course.html', teachers=teachers, course=course)
+
 @main.route('/create-question', methods=['GET', 'POST'])
 @login_required
 @requires_teacher
@@ -47,32 +57,29 @@ def create_question():
     #sets the default course in the course select field
     form = QuestionForm(course_id=session.get('selected_course'))
     if form.validate_on_submit():
+        #if there is no selected course in the session or
+        #if the course that was just selected is not the course that was in the session
+        #change the course in the session to the one just selected
         if not session.get('selected_course') or \
         not form.course_id.data == session.get('selected_course'):
             session['selected_course'] = form.course_id.data
         question = Question(
-            body=form.body.data, 
+            body=form.body.data,
             a=form.a.data,
             b=form.b.data,
-            c=form.c.data,
-            d=form.d.data, 
-            e=form.e.data, 
+            c=form.c.data if form.b.data else None,
+            d=form.d.data if form.b.data else None,
+            e=form.e.data if form.b.data else None, 
             correct=form.correct.data,
             course_id=int(session.get('selected_course')),
             user=current_user._get_current_object(),
             is_structural=False if form.b.data else True)
         db.session.add(question)
         db.session.commit()
-        flash(f'A question has been created by you')
+        flash(f'A multiple choice question has been created by you') if form.b.data else \
+        flash(f'A structural question has been created by you')
         return redirect(url_for('main.create_question'))
     return render_template('create_or_edit_question.html', form=form)
-
-@main.route('/my-questions', methods=['GET'])
-@login_required
-@requires_teacher
-def my_questions():
-    my_questions = Question.query.filter_by(user=current_user._get_current_object())
-    return render_template('my_questions.html', my_questions=my_questions)
 
 @main.route('/edit-question/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -88,15 +95,16 @@ def edit_question(id):
         question.body = form.body.data
         question.a = form.a.data
         question.b = form.b.data
-        question.c = form.c.data
-        question.d = form.d.data
-        question.e = form.e.data
+        question.c = form.c.data if form.b.data else None
+        question.d = form.d.data if form.b.data else None
+        question.e = form.e.data if form.b.data else None
         question.correct = form.correct.data
         question.course_id = form.course_id.data
         question.is_structural = False if form.b.data else True
         db.session.add(question)
         db.session.commit()
-        flash('Question edited')
+        flash('Question edited and is now a multiple choice question') if form.b.data else\
+        flash('Question edited and is now a structural question')
         return redirect(url_for('main.my_questions'))
     form.body.data = question.body
     form.a.data = question.a
@@ -122,15 +130,12 @@ def delete_question(id):
         flash('Question deleted')
         return redirect(url_for('main.my_questions'))
 
-@main.route('/course/<int:id>', methods=['GET'])
-def course(id):
-    quizes = Question.query.filter_by(course_id=id)
-    if quizes.first() is None:
-        flash('There are no questions for this course yet')
-        return redirect(url_for('main.index'))
-    course = quizes.first().course
-    teachers = {quiz.user for quiz in quizes}
-    return render_template('course.html', teachers=teachers, course=course)
+@main.route('/my-questions', methods=['GET'])
+@login_required
+@requires_teacher
+def my_questions():
+    my_questions = Question.query.filter_by(user=current_user._get_current_object())
+    return render_template('my_questions.html', my_questions=my_questions)
 
 @main.route('/quiz', methods=['GET', 'POST'])
 def quiz():

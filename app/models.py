@@ -73,4 +73,3 @@ class Course(db.Model):
     course_name = db.Column(db.String(64), unique=True)
     questions = db.relationship('Question', backref='course', lazy='dynamic', cascade="all, delete-orphan")
     results = db.relationship('Result', backref='course', lazy='dynamic', cascade="all, delete-orphan")
-

@@ -5,6 +5,9 @@ from .models import Question, User
 from faker import Faker
 
 def questions(count=1000):
+    """
+    Function to enter fake questions during development
+    """
     fake = Faker()
     for i in range(count):
         question = Question(

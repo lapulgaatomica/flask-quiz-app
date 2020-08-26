@@ -1,24 +1,20 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     HEADTEACHER = os.environ.get('HEADTEACHER')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # SQLALCHEMY_ECHO = True
     SSL_REDIRECT = False
-
     @staticmethod
     def init_app(app):
         pass
-
 
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
-
 
 class TestingConfig(Config):
     TESTING = True
@@ -26,14 +22,13 @@ class TestingConfig(Config):
         'sqlite://'
     WTF_CSRF_ENABLED = False
 
-
 class ProductionConfig(Config):
+    DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
 class HerokuConfig(ProductionConfig):
     SSL_REDIRECT = True if os.environ.get('DYNO') else False
-
     @classmethod
     def init_app(cls, app):
         ProductionConfig.init_app(app)
@@ -43,9 +38,6 @@ class HerokuConfig(ProductionConfig):
         file_handler = StreamHandler()
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
-
-    
-
 
 config = {
     'development': DevelopmentConfig,
