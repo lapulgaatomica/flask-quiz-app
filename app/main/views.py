@@ -141,7 +141,7 @@ def my_questions():
 def quiz():
     course = request.args.get('course')
     teacher = request.args.get('teacher')
-    quizes = Question.query.filter_by(course_id=course).filter_by(user_id=teacher).order_by(func.random())
+    quizes = Question.query.filter_by(course_id=course).filter_by(user_id=teacher).order_by(func.random()).limit(10)
     tname = quizes.first().user.username
     cname = quizes.first().course.course_name
     if request.method == 'POST':
