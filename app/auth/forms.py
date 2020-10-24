@@ -20,4 +20,4 @@ class LoginForm(FlaskForm):
                'Usernames must have only letters, numbers, dots or '
                'underscores')])
     password = PasswordField('Confirm password', validators=[DataRequired()])
-    ubmit = SubmitField('Log In')
+    submit = SubmitField('Log In')
