@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, SelectField,SubmitField
+from wtforms import StringField, TextAreaField, SelectField,SubmitField
 from wtforms.validators import DataRequired, Length
-from wtforms import ValidationError
 from ..models import Course
-from flask import session
 
 class QuestionForm(FlaskForm):
     body = TextAreaField('Question', validators=[DataRequired(), Length(1, 256)])

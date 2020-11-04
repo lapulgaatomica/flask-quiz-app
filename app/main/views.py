@@ -1,7 +1,7 @@
 from . import main
 from flask import render_template, redirect, url_for, session, request, flash
 from .forms import QuestionForm, CoursesForm
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_required, current_user
 from ..decorators import requires_teacher
 from ..models import Course, Question, Result, User
 from .. import db
