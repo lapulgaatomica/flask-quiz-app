@@ -7,6 +7,26 @@ from ..models import Course, Question, Result, User
 from .. import db
 from sqlalchemy.sql.expression import func
 
+def create_question_object(form, question_id=None):
+    if question_id:
+        question = Question.query.get_or_404(question_id)
+    else:
+        question = Question()
+        #if the question is a new question, assign it a user, which will be the user id of the current user that will definitely be a teacher
+        question.user=current_user._get_current_object()
+
+    question.body = form.body.data
+    question.a = form.a.data
+    question.b = form.b.data
+    question.c = form.c.data if form.b.data else None
+    question.d = form.d.data if form.b.data else None
+    question.e = form.e.data if form.b.data else None
+    question.correct = form.correct.data
+    question.course_id = form.course_id.data
+    question.is_structural = False if form.b.data else True
+
+    return question
+
 @main.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -57,24 +77,14 @@ def create_question():
     #sets the default course in the course select field
     form = QuestionForm(course_id=session.get('selected_course'))
     if form.validate_on_submit():
-        #if there is no selected course in the session or
-        #if the course that was just selected is not the course that was in the session
-        #change the course in the session to the one just selected
-        if not session.get('selected_course') or \
-        not form.course_id.data == session.get('selected_course'):
+        if not session.get('selected_course') or not form.course_id.data == session.get('selected_course'):
+            #if there is no selected course in the session or
+            #if the course that was just selected is not the course that was in the session
+            #change the course in the session to the one just selected
             session['selected_course'] = form.course_id.data
-        question = Question(
-            body=form.body.data,
-            a=form.a.data,
-            b=form.b.data,
-            c=form.c.data if form.b.data else None,
-            d=form.d.data if form.b.data else None,
-            e=form.e.data if form.b.data else None, 
-            correct=form.correct.data,
-            course_id=int(session.get('selected_course')),
-            user=current_user._get_current_object(),
-            is_structural=False if form.b.data else True)
-        db.session.add(question)
+        
+        question_object = create_question_object(form)
+        db.session.add(question_object)
         db.session.commit()
         flash(f'A multiple choice question has been created by you') if form.b.data else \
         flash(f'A structural question has been created by you')
@@ -88,24 +98,23 @@ def edit_question(id):
     if not current_user.owns_question(id):
         flash('The question you tried to edit was not created by you')
         return redirect(url_for('main.index'))
-    
-    question = Question.query.get_or_404(id)
     form = QuestionForm()
+
     if form.validate_on_submit():
-        question.body = form.body.data
-        question.a = form.a.data
-        question.b = form.b.data
-        question.c = form.c.data if form.b.data else None
-        question.d = form.d.data if form.b.data else None
-        question.e = form.e.data if form.b.data else None
-        question.correct = form.correct.data
-        question.course_id = form.course_id.data
-        question.is_structural = False if form.b.data else True
-        db.session.add(question)
+        question_object = create_question_object(form, id)
+        db.session.add(question_object)
         db.session.commit()
         flash('Question edited and is now a multiple choice question') if form.b.data else\
         flash('Question edited and is now a structural question')
         return redirect(url_for('main.my_questions'))
+    
+    """
+        there is a reason this part is below and not top
+        the reason is that, putting it at the top keeps 
+        changing the edited values to initial values 
+        they were before editing
+    """
+    question = Question.query.get_or_404(id)
     form.body.data = question.body
     form.a.data = question.a
     form.b.data = question.b
@@ -114,6 +123,7 @@ def edit_question(id):
     form.e.data = question.e
     form.correct.data = question.correct
     form.course_id.data = question.course_id
+    
     return render_template('create_or_edit_question.html', form=form)
 
 @main.route('/delete/<int:id>')
