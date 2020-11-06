@@ -37,12 +37,12 @@ def courses():
     if current_user.is_teacher:
         form = CoursesForm()
         if form.validate_on_submit():
-            search = Course.query.filter_by(course_name=form.course_name.data.lower()).first()
-            if search:
+            course_exists = Course.query.filter_by(course_name=form.course_name.data.lower()).first()
+            if course_exists:
                 flash(f'A Course named {form.course_name.data} already exists')
                 return redirect(url_for('main.courses'))
-            course = Course(course_name=form.course_name.data.lower())
-            db.session.add(course)
+            new_course = Course(course_name=form.course_name.data.lower())
+            db.session.add(new_course)
             db.session.commit()
             flash(f'A Course named {form.course_name.data} has been created by you')
             return redirect(url_for('main.courses'))
