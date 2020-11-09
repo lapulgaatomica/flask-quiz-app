@@ -1,12 +1,13 @@
 from random import randint, choice
-from sqlalchemy.exc import IntegrityError
 from . import db
-from .models import Question, User
+from .models import Question
 from faker import Faker
 
 def questions(count=1000):
     """
     Function to enter fake questions during development
+
+    return: None
     """
     fake = Faker()
     for i in range(count):

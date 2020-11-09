@@ -10,10 +10,15 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
 def create_app(config_name):
+    """
+    Ensures all the necessary installed packages are initialised
+
+    :return: the flask app instance
+    """
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+    
     config[config_name].init_app(app)
-
     db.init_app(app)
     bootstrap.init_app(app)
     login_manager.init_app(app)

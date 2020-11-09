@@ -7,8 +7,20 @@ from flask_login import login_user, logout_user, login_required
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    The function that registers a new user
+
+    return: the template to register if the
+    request method is a get request, or a
+    redirect to the login route if the request
+    is a post request
+    """
     form = RegistrationForm()
     if form.validate_on_submit():
+        user_exists = User.query.filter_by(username=form.username.data.lower()).first()
+        if user_exists:
+            flash(f'username {form.username.data} already exists')
+            return render_template('auth/register.html', form=form)
         user = User(username=form.username.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -18,6 +30,9 @@ def register():
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Function to login the user
+    """
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -31,6 +46,9 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
+    """
+    Function to log the user out
+    """
     logout_user()
     flash('You have just been logged out')
     return redirect(url_for('auth.login'))

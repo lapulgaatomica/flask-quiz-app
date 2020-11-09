@@ -17,6 +17,9 @@ class Question(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    def __repr__(self):
+        return f'<{self.body}>'
+
 class Result(db.Model):
     __tablename__ = 'results'
     id = db.Column(db.Integer, primary_key=True)
@@ -34,6 +37,8 @@ class User(UserMixin, db.Model):
     courses = db.relationship('Question', backref='user', foreign_keys=[Question.user_id], lazy='dynamic', cascade="all, delete-orphan")
     results = db.relationship('Result', backref='user', foreign_keys=[Result.user_id], lazy='dynamic', cascade="all, delete-orphan")
 
+    def __repr__(self):
+        return f'<{self.username}>'
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -73,3 +78,6 @@ class Course(db.Model):
     course_name = db.Column(db.String(64), unique=True)
     questions = db.relationship('Question', backref='course', lazy='dynamic', cascade="all, delete-orphan")
     results = db.relationship('Result', backref='course', lazy='dynamic', cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f'<{self.course_name}>'

@@ -14,14 +14,14 @@ def make_shell_context():
     Ensures returned values are accessible in the interactive shell
     without importing them.
 
-    :return: a dictionary of values to be imported
+    :return: a dictionary of values(Mostly database tables) to be imported
     """
     return dict(db=db, User=User, Course=Course, Question=Question, Result=Result)
 
 @app.context_processor
 def get_courses():
     """
-    Ensures all the courses in the database are available in all templates
+    Ensures all the courses in the database are available in any templates that calls g.courses
 
     :return: a dictionary of courses to be used by all templates
     """
@@ -44,5 +44,5 @@ def deploy():
     """
     Run deployment tasks.
     """
-    # migrate database to latest revision
+    # migrate database to latest database revision
     upgrade()
