@@ -34,6 +34,43 @@ def create_question_object(form, question_id=None):
 
     return question
 
+def get_score(form):
+    """
+    This function handles the calculation of the score of submitted quiz questions
+
+    return: the score
+    """
+    score = 0
+    
+    for question_id, my_answer in form.items():
+        question = Question.query.get_or_404(question_id)
+        if (not question.is_structural) and (question.correct == my_answer):
+            #if the question is not a structural question and the andwer is correct
+            score += 1
+        elif (question.is_structural) and (question.a.lower() == my_answer.lower()):
+            #if the question is a structural question and is correct
+            score += 1
+    return score
+
+def save_score(score, course, teacher):
+    if current_user.is_authenticated: #if the current user is logged in
+        result_query = Result.query.filter_by(user_id=current_user.id).filter_by(course_id=course).filter_by(teacher_id=teacher).first()
+        if result_query is None:
+            result = Result()
+            result.course_id=course
+            result.user=current_user
+            result.teacher_id=teacher
+            result.highest_score=score
+            db.session.add(result)
+            db.session.commit()
+            return True
+        elif score > result_query.highest_score:
+            result_query.highest_score = score
+            db.session.add(result_query)
+            db.session.commit()
+            return True
+    return False
+
 @main.route('/', methods=['GET'])
 def index():
     """
@@ -218,39 +255,15 @@ def quiz():
     course = request.args.get('course')
     teacher = request.args.get('teacher')
     quizes = Question.query.filter_by(course_id=course).filter_by(user_id=teacher).order_by(func.random()).limit(10)
-    tname = quizes.first().user.username
-    cname = quizes.first().course.course_name
+    tname = quizes.first().user.username #teacher name
+    cname = quizes.first().course.course_name #course name
     if request.method == 'POST':
-        score = 0
-        answered_questions = list(request.form)
-        if answered_questions:
-            for answered_question in answered_questions:
-                my_answer = request.form.get(answered_question)
-                query_result = Question.query.get_or_404(answered_question)
-                if (not query_result.is_structural) and (query_result.correct == my_answer):
-                    score += 1
-                elif (query_result.is_structural) and (query_result.a.lower() == my_answer.lower()):
-                    score += 1
-        
-        if current_user.is_authenticated:
-            result = Result.query.filter_by(user_id=current_user.id).filter_by(course_id=course).filter_by(teacher_id=teacher).first()
-            if result is None:
-                result = Result(
-                course_id=course,
-                user=current_user,
-                teacher_id=teacher,
-                highest_score=score)
-                flash(f'Your highest score in this quiz is {score} which is also your score in the test')
-            else:
-                if score > result.highest_score:
-                    result.highest_score = score
-                    flash(f'Your highest score in this quiz is {score} which is also your score in the test')
-                else:
-                    flash(f'Your score in this quiz is {score} ')
-            db.session.add(result)
-            db.session.commit()
+        score = get_score(request.form)
+        score_saved = save_score(score, course, teacher)
+        if score_saved:
+            flash(f'Your highest score in this quiz is {score} which is also your score in the test')
         else:
-            flash(f'Your score in this quiz is {score} ')
+           flash(f'Your score in this quiz is {score} ') 
         return redirect(url_for('main.quiz', course=course, teacher=teacher))
     return render_template('quiz.html', quizes=quizes, cname=cname, tname=tname)
 
