@@ -3,12 +3,12 @@
 {% block title %}Quiz App -{{course.course_name | title}} Course{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>{{course.course_name | title}} Course</h1>
-    <ul class="list-group">
-        {% for teacher in teachers %}
-        <li class="list-group-item"><a href="{{ url_for('main.quiz', course=course.id, teacher=teacher.id) }}">{{course.course_name}} quiz by {{teacher.username}}</a></li>
-        {% endfor %}
-    </ul>
-</div>
+	<div class="page-header">
+	    <h1>{{course.course_name | title}} Course</h1>
+	    <ul class="list-group">
+	        {% for teacher in teachers %}
+	        <li class="list-group-item"><a href="{{ url_for('main.quiz', course=course.id, teacher=teacher.id) }}">{{course.course_name}} quiz by {{teacher.username}}</a></li>
+	        {% endfor %}
+	    </ul>
+	</div>
 {% endblock %}

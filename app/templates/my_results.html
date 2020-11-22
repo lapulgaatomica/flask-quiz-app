@@ -3,25 +3,25 @@
 {% block title %}Quiz App My Results{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>My Results</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Course</th>
-                <th scope="col">Teacher</th>
-                <th scope="col">Highest Score</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for my_result in my_results %}
-            <tr>
-                <td>{{my_result.course.course_name}}</td>
-                <td>{{my_result.teacher_name}}</td>
-                <td>{{my_result.highest_score}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="page-header">
+        <h1>My Results</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Course</th>
+                    <th scope="col">Teacher</th>
+                    <th scope="col">Highest Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for my_result in my_results %}
+                <tr>
+                    <td>{{my_result.course.course_name}}</td>
+                    <td>{{my_result.teacher_name}}</td>
+                    <td>{{my_result.highest_score}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

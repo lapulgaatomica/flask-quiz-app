@@ -5,46 +5,45 @@
 {% block page_content %}
     <h2>{{cname}} quiz by {{tname}}</h2>
     <form method="post" action="" class="form" role="form">
-    {% for quiz in quizes %}
-        
-        <div >
-            <h3>{{quiz.body}}</h3>
-                {% if quiz.b %}
-                    <div>
-                        <label  for="{{quiz.id}}">{{quiz.a}}</label>
-                        <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="a">
-                    </div>
-                    <div>
-                        <label  for="{{quiz.id}}">{{quiz.b}}</label>
-                        <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="b">
-                    </div>
-                    {% if quiz.c %}
+        {% for quiz in quizes %}
+            <div >
+                <h3>{{quiz.body}}</h3>
+                    {% if quiz.b %}
                         <div>
-                            <label  for="{{quiz.id}}">{{quiz.c}}</label>
-                            <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="c">
+                            <label  for="{{quiz.id}}">{{quiz.a}}</label>
+                            <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="a">
+                        </div>
+                        <div>
+                            <label  for="{{quiz.id}}">{{quiz.b}}</label>
+                            <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="b">
+                        </div>
+                        {% if quiz.c %}
+                            <div>
+                                <label  for="{{quiz.id}}">{{quiz.c}}</label>
+                                <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="c">
+                            </div>
+                        {% endif %}
+                        {% if quiz.d %}
+                            <div>
+                                <label  for="{{quiz.id}}">{{quiz.d}}</label>
+                                <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="d">
+                            </div>
+                        {% endif %}
+                        {% if quiz.e %}
+                            <div>
+                                <label  for="{{quiz.id}}">{{quiz.e}}</label>
+                                <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="e">
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div>
+                            <label  for="{{quiz.id}}">Type Your Answer:</label>
+                            <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="text">
                         </div>
                     {% endif %}
-                    {% if quiz.d %}
-                        <div>
-                            <label  for="{{quiz.id}}">{{quiz.d}}</label>
-                            <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="d">
-                        </div>
-                    {% endif %}
-                    {% if quiz.e %}
-                        <div>
-                            <label  for="{{quiz.id}}">{{quiz.e}}</label>
-                            <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="e">
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <div>
-                        <label  for="{{quiz.id}}">Type Your Answer:</label>
-                        <input  id="{{quiz.id}}" name="{{quiz.id}}"  type="text">
-                    </div>
-                {% endif %}
-        </div>
-        <br>
-    {% endfor %}
+            </div>
+            <br>
+        {% endfor %}
         <input type="submit" value="Submit Answers">
     </form>
 {% endblock %}

@@ -4,15 +4,15 @@
 {% block title %}Quiz App - My Questions{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>My questions</h1>
-    <ul class="list-group">
-        {% for my_question in my_questions %}
-        <li class="list-group-item">{{ my_question.body }}, {{ my_question.course.course_name }}
-            <a href="{{ url_for('main.edit_question', id=my_question.id) }}">Edit</a>
-            <a href="{{ url_for('main.delete_question', id=my_question.id) }}">Delete</a>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+	<div class="page-header">
+	    <h1>My questions</h1>
+	    <ul class="list-group">
+	        {% for my_question in my_questions %}
+		        <li class="list-group-item">{{ my_question.body }}, {{ my_question.course.course_name }}
+		            <a href="{{ url_for('main.edit_question', id=my_question.id) }}">Edit</a>
+		            <a href="{{ url_for('main.delete_question', id=my_question.id) }}">Delete</a>
+		        </li>
+	        {% endfor %}
+	    </ul>
+	</div>
 {% endblock %}

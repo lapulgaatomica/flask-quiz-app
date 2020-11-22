@@ -193,7 +193,7 @@ def edit_question(id):
         return redirect(url_for('main.my_questions'))
     
     """
-        there is a reason this part is below and not top
+        there is a reason this part is below and not above
         the reason is that, putting it at the top keeps 
         changing the edited values to the initial values 
         that they were before editing
