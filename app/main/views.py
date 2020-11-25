@@ -153,10 +153,6 @@ def create_question():
     form = QuestionForm(course_id=session.get('selected_course'))
     if form.validate_on_submit():
         if not session.get('selected_course') or not form.course_id.data == session.get('selected_course'):
-            #if there is no selected course in the session or
-            #if the course that was just selected is not the 
-            #course that was previously in the session,
-            #change the course in the session to the one just selected
             session['selected_course'] = form.course_id.data
         
         question_object = create_question_object(form)
