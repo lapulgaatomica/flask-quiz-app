@@ -5,7 +5,7 @@ from faker import Faker
 
 def questions(count=1000):
     """
-    Function to enter fake questions during development
+    Function adds fake questions to the database during development
 
     return: None
     """
