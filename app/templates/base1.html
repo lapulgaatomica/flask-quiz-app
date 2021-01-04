@@ -1,0 +1,50 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Quiz App{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('main.index') }}">Home</a>
+                <a class="navbar-brand" href="{{ url_for('main.courses') }}">Courses</a>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_teacher %}
+                        <a class="navbar-brand" href="{{ url_for('main.create_question') }}">Create Question</a>
+                        <a class="navbar-brand" href="{{ url_for('main.my_questions') }}">My Questions</a>
+                    {% endif %}
+                        <a class="navbar-brand" href="{{ url_for('main.my_results') }}">My Results</a>
+                        <a class="navbar-brand" href="{{ url_for('auth.logout') }}">Logout</a>
+                {% else %}
+                    <a class="navbar-brand" href="{{ url_for('auth.register') }}">Register</a>
+                    <a class="navbar-brand" href="{{ url_for('auth.login') }}">Login</a>
+                {% endif %}
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Take Quiz <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for course in g.courses %}
+                                <li><a href="{{ url_for('main.course', id=course.id) }}">{{course.course_name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% block page_content %}{% endblock %}
+    </div>
+{% endblock %}

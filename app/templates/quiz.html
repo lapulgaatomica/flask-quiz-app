@@ -3,6 +3,13 @@
 {% block title %}Quiz App -Quiz{% endblock %}
 
 {% block page_content %}
+  {% for message in get_flashed_messages() %}
+      <div class="alert alert-warning">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+
+      </div>
+  {% endfor %}
     <h2>{{cname}} quiz by {{tname}}</h2>
     <form method="post" action="" class="form" role="form">
         {% for quiz in quizes %}
