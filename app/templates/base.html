@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -34,6 +33,15 @@
       </ul>
     </nav>
     <main>
+      {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert">
+            &times;
+          </button>
+        </div>
+      {% endfor %}
+      
       {% block page_content %}{% endblock %}
     </main>
   </body>

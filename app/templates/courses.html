@@ -1,28 +1,26 @@
 {% extends "base.html" %}
-
 {% import "bootstrap/wtf.html" as wtf %}
-
 {% block title %}Quiz App - Courses{% endblock %}
 
 {% block page_content %}
-    <div class="page-header">
-        <h1>Courses</h1>
-        <ul class="list-group">
-            {% for course in courses %}
-            <li class="list-group-item">
-                <a href="{{ url_for('main.course', id=course.id) }}">{{ course.course_name }}</a>
-                {% if current_user.is_teacher %}
-                <a href="{{ url_for('main.delete_course', id=course.id) }}">delete</a>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
+  <div class="courses">
+    <h1>Courses</h1>
+    <ul>
+      {% for course in courses %}
+        <li>
+          <a href="{{ url_for('main.course', id=course.id) }}">
+            {{ course.course_name }}
+          </a>
+          {% if current_user.is_teacher %}
+            <a href="{{ url_for('main.delete_course', id=course.id) }}">
+              delete
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
     {% if current_user.is_teacher %}
-        <div class="col-md-8">
-            {{ wtf.quick_form(form) }}
-        </div>
+      {{ wtf.quick_form(form) }}
     {% endif %}
-
+  </div>
 {% endblock %}
