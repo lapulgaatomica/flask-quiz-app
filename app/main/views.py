@@ -6,6 +6,7 @@ from ..decorators import requires_teacher
 from ..models import Course, Question, Result, User
 from .. import db
 from sqlalchemy.sql.expression import func
+from sqlalchemy.exc import IntegrityError
 
 def create_question_object(form, question_id=None):
     """
@@ -18,9 +19,10 @@ def create_question_object(form, question_id=None):
         question = Question.query.get_or_404(question_id)
     else:
         question = Question()
-        #if the question is a new question, assign it a user, which will be the user id of the current user that will definitely be a teacher
+        #if the question is a new question, assign it a user, which will be the
+        #user id of the current user that will definitely be a teacher
         question.user=current_user._get_current_object()
-    #The following lines of codes populate the field of the question instance 
+    #The following lines of codes populate the field of the question instance
     #with the data submitted by the field and returns it
     question.body = form.body.data
     question.a = form.a.data
@@ -28,7 +30,7 @@ def create_question_object(form, question_id=None):
     question.c = form.c.data if form.b.data else None
     question.d = form.d.data if form.b.data else None
     question.e = form.e.data if form.b.data else None
-    question.correct = form.correct.data
+    question.correct = form.correct.data if form[form.correct.data].data else None
     question.course_id = form.course_id.data
     question.is_structural = False if form.b.data else True
 
@@ -36,12 +38,13 @@ def create_question_object(form, question_id=None):
 
 def get_score(form):
     """
-    This function handles the calculation of the score of submitted quiz questions
+    This function handles the calculation of the score of submitted quiz
+    questions
 
     return: the score
     """
     score = 0
-    
+
     for question_id, my_answer in form.items():
         question = Question.query.get_or_404(question_id)
         if (not question.is_structural) and (question.correct == my_answer):
@@ -154,10 +157,16 @@ def create_question():
     if form.validate_on_submit():
         if not session.get('selected_course') or not form.course_id.data == session.get('selected_course'):
             session['selected_course'] = form.course_id.data
-        
+
         question_object = create_question_object(form)
-        db.session.add(question_object)
-        db.session.commit()
+        try:
+            db.session.add(question_object)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('An error occured, please check your input and ensure that\
+             the option you picked as the correct option exists')
+            return render_template('create_or_edit_question.html', form=form)
         flash(f'A multiple choice question has been created by you') if form.b.data else \
         flash(f'A structural question has been created by you')
         return redirect(url_for('main.create_question'))
@@ -169,7 +178,7 @@ def create_question():
 def edit_question(id):
     """
     This function handles the editing of questions whose ids are passed into
-    the function, decorated by the requires_teacher decorator, also ensures 
+    the function, decorated by the requires_teacher decorator, also ensures
     that the person trying to edit a question is the creator
 
     return: should return a template containing the question form, the form
@@ -182,16 +191,22 @@ def edit_question(id):
 
     if form.validate_on_submit():
         question_object = create_question_object(form, id)
-        db.session.add(question_object)
-        db.session.commit()
+        try:
+            db.session.add(question_object)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('An error occured, please check your input and ensure that\
+             the option you picked as the correct option exists')
+            return redirect(url_for('main.edit_question', id=id))
         flash('Question edited and is now a multiple choice question') if form.b.data else\
         flash('Question edited and is now a structural question')
         return redirect(url_for('main.my_questions'))
-    
+
     """
         there is a reason this part is below and not above
-        the reason is that, putting it at the top keeps 
-        changing the edited values to the initial values 
+        the reason is that, putting it at the top keeps
+        changing the edited values to the initial values
         that they were before editing
     """
     question = Question.query.get_or_404(id)
@@ -203,7 +218,7 @@ def edit_question(id):
     form.e.data = question.e
     form.correct.data = question.correct
     form.course_id.data = question.course_id
-    
+
     return render_template('create_or_edit_question.html', form=form)
 
 @main.route('/delete/<int:id>')
@@ -215,7 +230,7 @@ def delete_question(id):
     decorated by the requires_teacher decorator, also it ensures that the
     person trying to delete the question was the creator
 
-    return: should return a template 
+    return: should return a template
     """
     if not current_user.owns_question(id):
         flash('The question you tried to delete was not created by you')
@@ -259,7 +274,7 @@ def quiz():
         if score_saved:
             flash(f'Your highest score in this quiz is {score} which is also your score in the test')
         else:
-           flash(f'Your score in this quiz is {score} ') 
+           flash(f'Your score in this quiz is {score} ')
         return redirect(url_for('main.quiz', course=course, teacher=teacher))
     return render_template('quiz.html', quizes=quizes, cname=cname, tname=tname)
 
@@ -275,5 +290,5 @@ def my_results():
     """
     my_results = Result.query.filter_by(user=current_user._get_current_object()).all()
     for my_result in my_results:
-        my_result.teacher_name = User.query.get_or_404(my_result.teacher_id).username 
+        my_result.teacher_name = User.query.get_or_404(my_result.teacher_id).username
     return render_template('my_results.html', my_results=my_results)
