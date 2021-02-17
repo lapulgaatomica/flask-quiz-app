@@ -12,7 +12,7 @@ class QuestionForm(FlaskForm):
     e = StringField('Fifth Option')
     correct = SelectField('Correct Option', choices=[
         ('a', 'First Option'), ('b', 'Second Option'),
-        ('c', 'Third Option'), ('d', 'Fourth Option'), 
+        ('c', 'Third Option'), ('d', 'Fourth Option'),
         ('e', 'Fifth Option')])
     course_id = SelectField('Course', coerce=int)
     submit = SubmitField('Submit Question')

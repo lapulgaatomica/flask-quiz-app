@@ -5,6 +5,6 @@
 {% block page_content %}
 	<div class="createedit">
     <h3>{% if form.body.data %}Edit{% else %} New {% endif %} Question</h3>
-    {{ wtf.quick_form(form) }}
+    {{ wtf.quick_form(form, button_map={'submit': 'primary'}) }}
 	</div>
 {% endblock %}

@@ -20,7 +20,7 @@
       {% endfor %}
     </ul>
     {% if current_user.is_teacher %}
-      {{ wtf.quick_form(form) }}
+      {{ wtf.quick_form(form, button_map={'submit': 'primary'}) }}
     {% endif %}
   </div>
 {% endblock %}
