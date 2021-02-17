@@ -3,16 +3,16 @@
 {% block title %}Quiz App - Courses{% endblock %}
 
 {% block page_content %}
-  <div class="courses">
+  <div>
     <h1>Courses</h1>
-    <ul>
+    <ul class="list-group list-group-flush">
       {% for course in courses %}
-        <li>
-          <a href="{{ url_for('main.course', id=course.id) }}">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a class="btn btn-link btn-lg" href="{{ url_for('main.course', id=course.id) }}">
             {{ course.course_name }}
           </a>
           {% if current_user.is_teacher %}
-            <a href="{{ url_for('main.delete_course', id=course.id) }}">
+            <a class="btn btn-danger btn-lg" href="{{ url_for('main.delete_course', id=course.id) }}">
               delete
             </a>
           {% endif %}

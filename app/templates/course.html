@@ -2,12 +2,12 @@
 {% block title %}Quiz App -{{course.course_name | title}} Course{% endblock %}
 
 {% block page_content %}
-	<div class="course">
+	<div>
     <h1>{{course.course_name | title}} Course</h1>
-    <ul>
+    <ul class="list-group list-group-flush">
       {% for teacher in teachers %}
-      	<li>
-					<a href="{{url_for('main.quiz', course=course.id, teacher=teacher.id)}}">
+      	<li class="list-group-item">
+					<a class="btn btn-outline-primary" href="{{url_for('main.quiz', course=course.id, teacher=teacher.id)}}">
 						{{course.course_name}} quiz by {{teacher.username}}
 					</a>
 				</li>

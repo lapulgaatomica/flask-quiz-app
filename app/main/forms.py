@@ -23,4 +23,4 @@ class QuestionForm(FlaskForm):
 
 class CoursesForm(FlaskForm):
     course_name = StringField('Course Name', validators=[DataRequired(), Length(1, 64)])
-    submit = SubmitField('Enter Course Name')
+    submit = SubmitField('Enter New Course Name')

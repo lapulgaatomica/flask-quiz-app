@@ -2,44 +2,51 @@
 {% block title %}Quiz App -Quiz{% endblock %}
 
 {% block page_content %}
-  <h2>{{cname}} quiz by {{tname}}</h2>
+  <h2>{{cname | title}} Quiz by {{tname | title}}</h2>
   <form method="post" action="" class="form" role="form">
     {% for quiz in quizes %}
-      <h3>{{quiz.body}}</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3>{{quiz.body}}</h3>
+      </div>
+      <div class="card-body">
       {% if quiz.b %}
-        <div>
-          <label for="{{quiz.id}}">{{quiz.a}}</label>
-          <input id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="a">
+        <div class="form-check">
+          <input class="form-check-input" id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="a">
+          <label for="{{quiz.id}}" class="form-check-label">{{quiz.a}}</label>
         </div>
-        <div>
-          <label for="{{quiz.id}}">{{quiz.b}}</label>
-          <input id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="b">
+        <div class="form-check">
+          <input class="form-check-input" id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="b">
+          <label for="{{quiz.id}}" class="form-check-label">{{quiz.b}}</label>
         </div>
         {% if quiz.c %}
-          <div>
-            <label for="{{quiz.id}}">{{quiz.c}}</label>
-            <input id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="c">
+          <div class="form-check">
+            <input class="form-check-input" id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="c">
+            <label for="{{quiz.id}}" class="form-check-label">{{quiz.c}}</label>
           </div>
         {% endif %}
         {% if quiz.d %}
-          <div>
-            <label for="{{quiz.id}}">{{quiz.d}}</label>
-            <input id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="d">
+          <div class="form-check">
+            <input class="form-check-input" id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="d">
+            <label for="{{quiz.id}}" class="form-check-label">{{quiz.d}}</label>
           </div>
         {% endif %}
         {% if quiz.e %}
-          <div>
-            <label for="{{quiz.id}}">{{quiz.e}}</label>
-            <input id="{{quiz.id}}" name="{{quiz.id}}"  type="radio" value="e">
+          <div class="form-check">
+            <input class="form-check-input" id="{{quiz.id}}" name="{{quiz.id}}" type="radio" value="e">
+            <label for="{{quiz.id}}" class="form-check-label">{{quiz.e}}</label>
           </div>
         {% endif %}
       {% else %}
         <div>
-          <label for="{{quiz.id}}">Type Your Answer:</label>
-          <input id="{{quiz.id}}" name="{{quiz.id}}"  type="text">
+          <label for="{{quiz.id}}" class="form-label">Type Your Answer:</label>
+          <input class="form-control" id="{{quiz.id}}" name="{{quiz.id}}"  type="text" autocomplete="off">
         </div>
       {% endif %}
+      </div>
+      </div>
     {% endfor %}
+    <br>
     <input class="btn btn-primary" type="submit" value="Submit Answers">
   </form>
 {% endblock %}
