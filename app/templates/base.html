@@ -4,44 +4,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Quiz App{% endblock %}</title>
-
-    <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}"> -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
+    <script type="text/javascript" src="{{url_for('static', filename='index.js')}}" defer>
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
-    <header>
-        <nav>
-            <a href="{{url_for('main.index')}}">Pulga Quiz App</a>
-            <a href="{{url_for('main.courses')}}">Courses</a>
-            <ul id="quizmenu">
-              {% for course in g.courses %}
-                <li><a href="{{url_for('main.course', id=course.id)}}">{{course.course_name}}</a>
-              {% endfor %}
-            </ul>
-            {% if current_user.is_authenticated %}
-              {% if current_user.is_teacher %}
-                <a href="{{url_for('main.create_question')}}">Create Question</a>
-                <a href="{{url_for('main.my_questions')}}">My Questions</a>
-              {% endif %}
-              <a href="{{url_for('main.my_results')}}">My Results</a>
-              <a href="{{url_for('auth.logout')}}">logout</a>
-            {% else %}
-              <a href="{{url_for('auth.register')}}">Register</a>
-              <a href="{{url_for('auth.login')}}">Login</a>
-            {% endif %}
-        </nav>
-    </header>
-
-    <main>
+    {% include 'navbar.html' %}
+    <main class="container">
       {% for message in get_flashed_messages() %}
-        <div class="alert alert-warning">
+        <div class="alert alert-info">
           {{ message }}
           <button type="button" class="close" data-dismiss="alert">
             &times;
           </button>
         </div>
       {% endfor %}
+      {% block page_content %}
 
-      {% block page_content %}{% endblock %}
+      {% endblock %}
     </main>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
 </html>
